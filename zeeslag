@@ -1,0 +1,181 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package be.inf1.cirkelspel.model;
+
+import java.util.ArrayList;
+
+/**
+ *
+ * @author u0002531
+ */
+public class CirkelSpel {
+     /** de lijst met cirkels */
+     private ArrayList<Cirkel> cirkels;
+     
+     /** is het spel nog bezig */
+     private boolean bezig;
+     
+     /** de huidige highscore */
+     private int highscore;
+
+     /** het te plaatsen getal */
+     private int tePlaatsenGetal;
+     
+    /** Constructor voor het cirkelspel met 0 cirkels */
+    public CirkelSpel() {
+        cirkels = new ArrayList<>();
+        bezig = true;
+        highscore = 0;
+        tePlaatsenGetal = (int)(Math.random()*9)+1;
+    }
+    
+    /** Constructor voor het cirkelspel met een aantal willekeurige cirkels.
+     * De cirkel krijgen een middelpunt met x en y groter of gelijk aan 0 en kleiner dan 100
+     *
+     * @param aantal het aantal cirkels
+     */
+    public CirkelSpel(int aantal) {
+        this();
+        for (int i=0; i < aantal; i++) {
+            double x = Math.random()*100;
+            double y = Math.random()*100;
+            Cirkel c = new Cirkel(x,y);
+            cirkels.add(c);
+        }
+    }
+     
+    /** Voeg een cirkel toe.
+     * De cirkel krijgt een middelpunt met x en y groter of gelijk aan 0 en kleiner dan 100
+     *
+     */
+    public void addCirkel() {
+       double x = Math.random()*100;
+       double y = Math.random()*100;
+       Cirkel c = new Cirkel(x,y);
+       cirkels.add(c);
+    }
+
+    /** Voeg een cirkel toe.
+     * 
+     * @param c de toe te voegen cirkel
+     */
+    public void addCirkel(Cirkel c) {
+       cirkels.add(c);
+    }
+
+    /** plaats het huidige getal in de opgegeven cirkel
+     * 
+     * @param c de cirkel waar het getal in moet
+     */
+    public void plaatsGetal(Cirkel c) {
+        if (!bezig) return;
+        c.selecteer(tePlaatsenGetal);
+        tePlaatsenGetal = (int)(Math.random()*9)+1;
+        if (getScore() > highscore) {
+            highscore = getScore();
+        }
+        if (overlaptErgens()) {
+           bezig = false; 
+        }
+    }
+    
+    /** plaats het huidige getal in de cirkel met het opgegeven rangnummer
+     * 
+     * @param n nummer van de cirkel
+     */
+    public void plaatsGetal(int n) {
+        if (n < 0 || n >= cirkels.size()) return;
+        plaatsGetal(cirkels.get(n));
+    }
+    
+    /**
+     * hoeveel cirkels zijn er momenteel in het spel?
+     * 
+     * @return het aantal cirkels 
+     */
+    public int getAantalCirkels() {
+        return cirkels.size();
+    }
+    
+    
+    /**
+     * wat is de score voor dit spel?
+     * 
+     * Berekent de som van de scores per cirkel.
+     * 
+     * @return de totaalscore 
+     */
+    public int getScore() {
+        int score = 0;
+        for (Cirkel c: cirkels) {
+           score = score + c.getScore();
+        }
+        return score;
+    }
+    
+    /**
+     * zijn er 2 (of meer) cirkels die onderling overlappen?
+     * 
+     * @return true indien er ergens cirkels overlappen 
+     */
+    public boolean overlaptErgens() {
+        int i = 0;
+        for (Cirkel c: cirkels) {
+            for (Cirkel d: cirkels) {
+                if (c != d && c.overlaptMet(d)) {
+                    c.setOverlappend(true);
+                    d.setOverlappend(true);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /** geef een verzameling met alle cirkels terug
+     * 
+     * @return de lijst met alle cirkels 
+     */
+    public ArrayList<Cirkel> getCirkels() {
+        return cirkels;
+    }
+
+    //basis getters en setters
+    /**
+     * is het spel nog bezig
+     * @return the bezig
+     */
+    public boolean isBezig() {
+        return bezig;
+    }
+
+    /**
+     * de huidige highscore
+     * @return the highscore
+     */
+    public int getHighscore() {
+        return highscore;
+    }
+
+    /**
+     * het te plaatsen getal
+     * @return the tePlaatsenGetal
+     */
+    public int getTePlaatsenGetal() {
+        return tePlaatsenGetal;
+    }
+
+    /**
+     * reset: begin het spel opnieuw
+     */
+    public void reset() {
+        System.out.println("reset");
+        for (Cirkel c: cirkels) {
+            c.reset();
+        }
+        bezig = true;
+    }
+}
